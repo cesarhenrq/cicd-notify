@@ -4,6 +4,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const app = express();
+const cors = require("cors");
 const PORT = 3000;
 
 const qrCodeDir = path.join(__dirname, "public");
@@ -20,10 +21,8 @@ const client = new Client({
 
 client.on("qr", async (qr) => {
   try {
-    // Caminho do arquivo de imagem
     const qrCodeFilePath = path.join(qrCodeDir, "qrcode.png");
 
-    // Gerar QR code e salvar como imagem
     await qrcode.toFile(qrCodeFilePath, qr);
 
     console.log(`QR code gerado e salvo em: ${qrCodeFilePath}`);
@@ -42,7 +41,11 @@ app.use(express.json());
 
 app.use("/public", express.static(qrCodeDir));
 
+app.use(cors());
+
 app.post("/send-message", async (req, res) => {
+  console.log("body: ", req.body);
+  console.log("date: ", new Date());
   const { groupName, message } = req.body;
 
   try {
